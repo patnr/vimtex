@@ -69,7 +69,11 @@ function! s:files_manual() abort " {{{1
 
   " Handle local file editing (e.g. subfiles package)
   let l:id = get(get(b:, 'vimtex_local', {'main_id' : b:vimtex_id}), 'main_id')
-  let l:vimtex = vimtex#state#get(l:id)
+  if vimtex#state#exists(l:id)
+    let l:vimtex = vimtex#state#get(l:id)
+  else
+    return []
+  end
 
   let l:bibfiles = []
   for l:file in map(l:vimtex.get_sources(), 'l:vimtex.root . ''/'' . v:val')
