@@ -57,7 +57,11 @@ function! VimtexIndentBib() abort " {{{1
     if s:count('{', cline) - s:count('}', cline) < 0
       return 0
     else
-      return &sw
+      "return &sw
+      " Avoid indentation for new entries
+      " Not sure if this is a proper fix...
+      "return &sw
+      return ind
     endif
   endif
 
