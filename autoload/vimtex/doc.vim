@@ -32,9 +32,9 @@ function! vimtex#doc#package(word) abort " {{{1
   let l:context = vimtex#doc#get_context(a:word)
   if empty(l:context) | return | endif
 
-  for l:handler in g:vimtex_doc_handlers
+  for l:Handler in g:vimtex_doc_handlers
     try
-      if call(l:handler, [l:context]) | return | endif
+      if call(l:Handler, [l:context]) | return | endif
     catch /E117/
     endtry
   endfor
@@ -264,7 +264,7 @@ function! s:packages_open(context) abort " {{{1
   call vimtex#doc#make_selection(a:context)
   if empty(a:context.selected) | return 0 | endif
 
-  call vimtex#util#www('http://texdoc.net/pkg/' . a:context.selected)
+  call vimtex#util#www('http://texdoc.org/pkg/' . a:context.selected)
   redraw!
 endfunction
 
