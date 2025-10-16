@@ -26,6 +26,12 @@ endfunction
 
 " }}}1
 function! vimtex#syntax#in_mathzone(...) abort " {{{1
+  " Enable vimtex imaps in markdown
+  " NB: No idea about any other side effects!
+  if &filetype ==# 'markdown'
+    " return luaeval('require("luasnip-latex-snippets.util.ts_utils").in_mathzone()')
+    return luaeval('function() local ok, mod = pcall(require, "luasnip-latex-snippets.util.ts_utils"); return ok and mod.in_mathzone and mod.in_mathzone() or nil end')()
+  endif
   let l:groups = reverse(call('vimtex#syntax#stack', a:000))
   let l:group = matchstr(l:groups, s:__mathzone_regex)
   return l:group =~# '^texMathZone'
