@@ -80,6 +80,7 @@ CONTENTS                                                      *vimtex-contents*
     Denite/Unite source                         |vimtex-denite| / |vimtex-unite|
     fzf.vim integration                         |vimtex-fzf|
     fzf-lua integration                         |vimtex-fzf-lua|
+    Snacks integration                          |vimtex-snacks|
   Compilation                                   |vimtex-compiler|
     Latexmk                                     |vimtex-compiler-latexmk|
     Latexrun                                    |vimtex-compiler-latexrun|
@@ -469,7 +470,7 @@ Directory scan ~
   3. The expanded content contains `\begin{document}`.
 
   Notice that the main file itself does not need to contain the
-  `\documentclass` line and `\begin{docment}`, since these can stem from
+  `\documentclass` line and `\begin{document}`, since these can stem from
   included `.tex` files. The option |g:vimtex_include_indicators| is used by
   the parser to specify commands that include `.tex` files for the recursive
   expansion.
@@ -848,6 +849,7 @@ This feature is explained in more detail later, see |vimtex-imaps|.
    <localleader>lr  |<plug>(vimtex-reverse-search)|                 `n`
    <localleader>ll  |<plug>(vimtex-compile)|                        `n`
    <localleader>lL  |<plug>(vimtex-compile-selected)|               `nx`
+   <localleader>lS  |<plug>(vimtex-compile-ss)|                     `n`
    <localleader>lk  |<plug>(vimtex-stop)|                           `n`
    <localleader>lK  |<plug>(vimtex-stop-all)|                       `n`
    <localleader>le  |<plug>(vimtex-errors)|                         `n`
@@ -2949,7 +2951,7 @@ OPTIONS                                                        *vimtex-options*
   Default value: 0
 
 *g:vimtex_syntax_packages*
-  A dictionary for package specific syntax configuration. Each key represent
+  A dictionary for package specific syntax configuration. Each key represents
   a single package and the values are themselves configuration dictionaries.
   All packages share the following options:
 
@@ -3815,7 +3817,7 @@ MAP DEFINITIONS                                               *vimtex-mappings*
 *<plug>(vimtex-cmd-toggle-star-agn)*
   Toggle starred command or environment, whichever is closest to the cursor.
   This is not mapped by default. Some users may prefer the combined behaviour
-  and may want to map it, e.g. like this in their personal `ftplugin/tex.vim`:
+  and may want to map it, e.g. like this in their personal `ftplugin/tex.vim`: >vim
 
     nmap tss <plug>(vimtex-cmd-toggle-star-agn)
 <
@@ -4245,7 +4247,11 @@ Examples (Vimscript) - see below for a Lua example: >vim
   " Specify additional behaviour after inverse search
   augroup vimtex_event_5
     autocmd!
+    " Use a custom center and flash function
     autocmd User VimtexEventViewReverse call CenterAndFlash()
+
+    " Or perhaps just use a vimtex blink function
+    autocmd User VimtexEventViewReverse call vimtex#ui#blink()
   augroup END
 
   " Focus the terminal after inverse search
@@ -4299,27 +4305,27 @@ automatically, see |g:vimtex_text_obj_variant| for more info.
 
 Some examples of how to use the text objects can be useful. The following is
 a simple table that shows the original text on the left, the keys that are
-typed in the middle, and the result on the right. The bar "|" indicates the
+typed in the middle, and the result on the right. The bar "█" indicates the
 cursor position before the operation. >
 
   BEFORE                       KEYS    AFTER
-  \comm|and{arg}               dic     \command{}
-  \command{a|rg}               gUac    \COMMAND{ARG}
+  \comm█and{arg}               dic     \command{}
+  \command{a█rg}               gUac    \COMMAND{ARG}
 
-  \lef|t( asd \right)          cid     \left(| \right)
+  \lef█t( asd \right)          cid     \left(█ \right)
 
   \begin{x}                    die     \begin{x}
-    hello world|                       \end{x}
+    hello world█                       \end{x}
   \end{x}
 
-  $math | here$                da$
+  $math █ here$                da$
 
   \begin{itemize}                      \begin{itemize}
-    \item hello moon|          cim       \item |
+    \item hello moon█          cim       \item █
   \end{itemize}                        \end{itemize}
 
   \begin{itemize}                      \begin{itemize}
-    \item hello moon|          dam     \end{itemize}
+    \item hello moon█          dam     \end{itemize}
   \end{itemize}
 
 Note: The "greediness" of the command text objects (`ic` and `ac`) can be
@@ -5402,7 +5408,7 @@ one may override the default mapping, e.g.: >vim
   nnoremap <localleader>lt :<c-u>Unite vimtex<cr>
 
 ------------------------------------------------------------------------------
-FZF INTEGRATION                                                   *vimtex-fzf*
+FZF INTEGRATION                                                    *vimtex-fzf*
 
                                            https://github.com/junegunn/fzf.vim
                                                https://github.com/junegunn/fzf
@@ -5437,9 +5443,9 @@ example, if you've defined `g:fzf_layout`, then those options can be passed to
   :call vimtex#fzf#run('ctli', g:fzf_layout)
 
 ------------------------------------------------------------------------------
-FZF-LUA INTEGRATION                                           *vimtex-fzf-lua*
+FZF-LUA INTEGRATION                                            *vimtex-fzf-lua*
 
-                                           https://github.com/ibhagwan/fzf-lua/
+                                            https://github.com/ibhagwan/fzf-lua
 |fzf-lua| integrates the general-purpose command-line fuzzy finder |fzf| into
 neovim through Lua. It may be used to quickly navigate VimTeX's built-in ToC
 feature. To use it, define a mapping to `require("vimtex.fzf-lua").run(options)`,
@@ -5454,6 +5460,23 @@ custom options to fzf-lua via "fzf_opts".
 You can also choose to only show certain entry "layers" by passing a layer
 string. By default, all layers are displayed. To only show `content` and
 `label`s use `require("vimtex.fzf-lua").run({layers ="cl"})`.
+
+------------------------------------------------------------------------------
+SNACKS INTEGRATION                                              *vimtex-snacks*
+
+                                           https://github.com/folke/snacks.nvim
+|Snacks| is a collection of quality of life plugins for Neovim. It includes
+a picker, which can be used with the table of contents in VimTeX.
+
+To use it, define a mapping to `require("vimtex.snacks").toc(options)`, e.g. >lua
+
+  vim.keymap.set("n", "<localleader>lt", function()
+    return require("vimtex.snacks").toc()
+  end)
+
+Currently three options are supported: "layers" and "preview" and "confirm".
+The first is similar to |vimtex-fzf-lua|, the latter are passed directly to
+the Snacks picker.
 
 ==============================================================================
 COMPILER                                                      *vimtex-compiler*
@@ -5723,7 +5746,7 @@ A common workflow is to utilize the |location-list| with |:lmake|:
 
 After linting, the compiler or linter messages are added to the location list.
 This list may be displayed in the location-list window with |:lwindow|, and
-one may jump between the entries with |:lN| and |:lp|. To automatically open
+one may jump between the entries with |:lne| and |:lp|. To automatically open
 the location-list window after linting is finished, one may add the following
 to one's |vimrc|: >vim
 
@@ -5759,7 +5782,7 @@ allows one to use the location list. For `AsyncRun`, one may define a custom
           \ AsyncRun<bang> -auto=make -program=make
 
 The quickfix window that lists the linter errors and warnings can then be
-opened by |:cwindow| and they can be jumped to by |:cN| respectively |:cp|.
+opened by |:cwindow| and they can be jumped to by |:cn| and |:cp| respectively.
 
 Often, a syntax error in a BibTeX file is due to a missing comma after an
 entry. One may define a command to automatically add such missing commas, e.g.
@@ -6057,6 +6080,13 @@ may use the `MacVim` preset. However, it may be more convenient to use a
 
   nvim --headless -c "VimtexInverseSearch %line '%file'"
 
+Depending on your system configuration, it may be necessary to specify the
+path to the Vim/Neovim binary. For example, if Neovim was installed via
+homebrew, one can specify the following in the Skim settings panel. >bash
+
+  Command = /opt/homebrew/bin/nvim
+  Arguments = --headless -c "VimtexInverseSearch %line '%file'"
+
 Inverse search is activated by pressing `Shift` and `Command`, then clicking
 the text you want to search. For more info on inverse search, see
 |vimtex-synctex-inverse-search|.
@@ -6080,13 +6110,23 @@ Configuration: >vim
 For convenience, the above configuration is used by default on Windows if
 `SumatraPDF` is detected as executable.
 
-Inverse search must be configured under `Settings --> Options` from within
-SumatraPDF. Find the section `Set inverse search command-line` in the bottom
-and use the following viewer configuration: >bash
+To configure inverse search:
 
-  cmd /c start /min "" vim -v --not-a-term -T dumb -c "VimtexInverseSearch %l '%f'"
+1. Install SumatraPDF for all users and add to `PATH.`
+2. Open "Settings -> Advanced Options" in SumatraPDF and edit the following
+   variables: >bash
 
-  cmd /c start /min "" nvim --headless -c "VimtexInverseSearch %l '%f'"
+     InverseSearchCmdLine = cmd /c start /min "" nvim --headless -c "VimtexInverseSearch %l '%f'"
+     EnableTeXEnhancements = true
+<
+   For Vim instead of Neovim, use: >bash
+
+     InverseSearchCmdLine = cmd /c start /min "" vim -v --not-a-term -T dumb -c "VimtexInverseSearch %l '%f'"
+
+If you are using an old version of SumatraPDF where `Advanced Options` is not
+available: open "Settings -> Options", Find the section "Set inverse search
+command-line" in the bottom, and use the appropriate viewer configuration,
+i.e. one of the `InverseSearchCmdLine` from step 2 above.
 
 Inverse search is activated with a double click in the PDF file. See
 |vimtex-synctex-inverse-search| for more info on inverse search.
@@ -6435,7 +6475,7 @@ Note: This reference is currently a work in progress!
 
 *vimtex#cite#get_key*
   Returns the citation key under the cursor. Can be useful e.g. to create
-  a function to open a citation in another progrem such as BibDesk or Zotero.
+  a function to open a citation in another program such as BibDesk or Zotero.
   For example: >vim
 
     function! OpenInBibDesk() abort
@@ -6494,6 +6534,9 @@ Note: This reference is currently a work in progress!
   Utility function for reverse search from pdf viewer. Takes two arguments:
   the line number and a filename. The function runs the event
   |VimtexEventViewReverse| at the end, which allows more user customization.
+  E.g., the user could call `vimtex#ui#blink()` to have a blinking effect
+  after doing the reverse search. See the docs for |VimtexEventViewReverse|
+  for an example.
 
 ==============================================================================
 FAQ                                                                *vimtex-faq*
@@ -6863,8 +6906,8 @@ A: VimTeX implements a traditional syntax script for syntax highlighting of
 
    However, it is hard to write a general parser for LaTeX. This is because
    LaTeX is a semantic language with a large amount of different commands and
-   macros from thousands of available packages, many of which makes sense to
-   highlight in a different manner. That is, we need to handle a whole lot of
+   macros from thousands of available packages, many of which make sense to be
+   highlighted in a different manner. That is, we need to handle a whole lot of
    special cases and edge cases!
 
    Furthermore, Tree-sitter highlighting does not currently support
@@ -6941,7 +6984,7 @@ A: Start by reading the section on |vimtex-view-texshop|. The examples below
    was opened. If the buffer is not active, in a hidden tab or if the file is
    not open at all, inverse search will fail.
 
-   As alternative, to `VimtexInverseSearch`if the .tex document was opened
+   As an alternative to `VimtexInverseSearch`, if the .tex document was opened
    with the `--remote-silent` option, i.e.: >bash
 
      /usr/local/bin/mvim --remote-silent foo.tex
@@ -6982,7 +7025,7 @@ the quickfix window does not load.
 
 Tips:
 1. Ensure that a latexmk process and a Perl process have started. If they have
-   not been started, then these two programs may not accessible given your
+   not been started, then these two programs may not be accessible given your
    operating system's PATH environment variable.
 2. Ensure that the option `-interaction=nonstopmode` is provided to latexmk.
    This is done by default by VimTeX, unless the user provides custom options
